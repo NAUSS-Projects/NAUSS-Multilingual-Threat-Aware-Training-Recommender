@@ -1,0 +1,2 @@
+2025-11-11 18:41:36.754023: wfastcgi.py will restart when files in C:\inetpub\AI\Project1\ are changed: .*((\.py)|(\.config))$
+2025-11-11 18:41:36.759839: wfastcgi.py 3.0.0 initialized

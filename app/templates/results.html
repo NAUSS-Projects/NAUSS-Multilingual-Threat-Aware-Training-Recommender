@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Recommendations - Threat-Aware Training Recommender{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-lightbulb me-2 text-warning"></i>
+                Training Recommendations
+            </h2>
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-plus me-2"></i>New Analysis
+            </a>
+        </div>
+
+        {% if results %}
+            {# Precompute counts safely #}
+            {% set ns = namespace(total=0, new_courses=0, new_subjects=0) %}
+            {% for r in results %}
+                {% set ns.total = ns.total + (r.suggested_courses|length) %}
+                {% for c in r.suggested_courses %}
+                    {% if c.status == 'new_course' %}
+                        {% set ns.new_courses = ns.new_courses + 1 %}
+                    {% elif c.status == 'new_subject_area' %}
+                        {% set ns.new_subjects = ns.new_subjects + 1 %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+
+            <!-- Summary Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center bg-primary text-white">
+                        <div class="card-body">
+                            <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+                            <h4>{{ results|length }}</h4>
+                            <small>Subject Areas</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center bg-success text-white">
+                        <div class="card-body">
+                            <i class="fas fa-book fa-2x mb-2"></i>
+                            <h4>{{ ns.total }}</h4>
+                            <small>Course Recommendations</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center bg-info text-white">
+                        <div class="card-body">
+                            <i class="fas fa-star fa-2x mb-2"></i>
+                            <h4>{{ ns.new_courses }}</h4>
+                            <small>New Courses</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center bg-warning text-dark">
+                        <div class="card-body">
+                            <i class="fas fa-plus-circle fa-2x mb-2"></i>
+                            <h4>{{ ns.new_subjects }}</h4>
+                            <small>New Subject Areas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="accordion" id="recommendationsAccordion">
+                {% for recommendation in results %}
+                <div class="accordion-item mb-3 border rounded shadow-sm">
+                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                        <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" 
+                                aria-expanded="{% if loop.first %}true{% else %}false{% endif %}" 
+                                aria-controls="collapse{{ loop.index }}">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-bookmark me-3 text-primary"></i>
+                                <div>
+                                    <h5 class="mb-1">{{ recommendation.subject_area }}</h5>
+                                    <small class="text-muted">
+                                        {{ recommendation.suggested_courses|length }} 
+                                        {{ 'course' if recommendation.suggested_courses|length == 1 else 'courses' }} recommended
+                                    </small>
+                                </div>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" 
+                         aria-labelledby="heading{{ loop.index }}" data-bs-parent="#recommendationsAccordion">
+                        <div class="accordion-body">
+                            {% for course in recommendation.suggested_courses %}
+                            <div class="card mb-3 {% if course.status == 'new_subject_area' %}border-warning{% elif course.status == 'new_course' %}border-success{% else %}border-info{% endif %}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="card-title mb-0">
+                                            <i class="fas fa-certificate me-2 
+                                               {% if course.status == 'new_subject_area' %}text-warning
+                                               {% elif course.status == 'new_course' %}text-success
+                                               {% else %}text-info{% endif %}"></i>
+                                            {{ course.course_name }}
+                                        </h6>
+                                        <span class="badge 
+                                              {% if course.status == 'new_subject_area' %}bg-warning text-dark
+                                              {% elif course.status == 'new_course' %}bg-success
+                                              {% elif course.status == 'outdated_course' %}bg-warning text-dark
+                                              {% else %}bg-info{% endif %}">
+                                            {% if course.status == 'new_subject_area' %}New Subject Area
+                                            {% elif course.status == 'new_course' %}New Course
+                                            {% elif course.status == 'outdated_course' %}Update Needed
+                                            {% else %}{{ course.status|title }}{% endif %}
+                                        </span>
+                                    </div>
+                                    
+                                    <p class="card-text text-muted mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        {{ course.reason }}
+                                    </p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Export Options -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-download me-2"></i>Export Recommendations
+                    </h6>
+                    <p class="card-text text-muted">Save your recommendations for future reference.</p>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-success" onclick="exportToJSON()">
+                            <i class="fas fa-file-code me-2"></i>Export as JSON
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="printPage()">
+                            <i class="fas fa-print me-2"></i>Print Results
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <!-- No Results -->
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                <h4>No Recommendations Found</h4>
+                <p class="text-muted">
+                    No similarities found between your training history and the provided news content.
+                    Try providing different news sources or check your Excel file format.
+                </p>
+                <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Try Again
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Hidden data for export -->
+<script type="application/json" id="recommendationsData">
+{{ results|tojson|safe }}
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function exportToJSON() {
+    const data = JSON.parse(document.getElementById('recommendationsData').textContent);
+    const exportData = {
+        "recommendations": data,
+        "export_date": new Date().toISOString(),
+        "total_subjects": data.length,
+        "total_courses": data.reduce((sum, rec) => sum + rec.suggested_courses.length, 0)
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'training_recommendations_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function printPage() {
+    window.print();
+}
+
+// Auto-expand first accordion item
+document.addEventListener('DOMContentLoaded', function() {
+    const firstAccordion = document.querySelector('.accordion-collapse');
+    if (firstAccordion) {
+        firstAccordion.classList.add('show');
+    }
+});
+</script>
+
+<style>
+@media print {
+    .btn-group, .card:last-child {
+        display: none !important;
+    }
+    .accordion-button {
+        background-color: transparent !important;
+        border: none !important;
+    }
+    .accordion-collapse {
+        display: block !important;
+    }
+}
+</style>
+{% endblock %}

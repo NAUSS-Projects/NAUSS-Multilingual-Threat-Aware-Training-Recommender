@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Upload & Analyze - Threat-Aware Training Recommender{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">
+                    <i class="fas fa-upload me-2"></i>
+                    Training Recommendation System
+                </h2>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <form action="{{ url_for('main.web_recommendations') }}" method="post" enctype="multipart/form-data" id="recommendationForm">
+                    <!-- Excel File Upload -->
+                    <div class="mb-4">
+                        <label for="file" class="form-label">
+                            <i class="fas fa-file-excel me-2 text-success"></i>
+                            <strong>Training History Excel File</strong>
+                        </label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".xlsx,.xls">
+                        <div class="form-text">
+                            Upload your Excel file with columns: <strong>Subject Area</strong>, <strong>Training name</strong>, <strong>Start Date</strong>, <strong>End Date</strong>
+                            <br>
+                            <small class="text-muted">Supported in both Arabic and English</small>
+                        </div>
+                    </div>
+
+                    <!-- News Sources Section -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-newspaper me-2 text-info"></i>
+                            Recent News Sources
+                        </h5>
+                        
+                        <!-- URLs Input -->
+                        <div class="mb-3">
+                            <label for="urls" class="form-label">
+                                <i class="fas fa-link me-2"></i>
+                                News URLs
+                            </label>
+                            <textarea class="form-control" id="urls" name="urls" rows="3" placeholder="Enter news URLs (one per line)&#10;Example:&#10;https://example.com/news1&#10;https://example.com/news2"></textarea>
+                            <div class="form-text">
+                                Enter one URL per line. The system will scrape and analyze the content.
+                            </div>
+                        </div>
+
+                        <!-- OR Divider -->
+                        <div class="text-center my-3">
+                            <span class="badge bg-secondary">OR</span>
+                        </div>
+
+                        <!-- Direct Text Input -->
+                        <div class="mb-3">
+                            <label for="news_text" class="form-label">
+                                <i class="fas fa-edit me-2"></i>
+                                Paste News Text Directly
+                            </label>
+                            <textarea class="form-control" id="news_text" name="news_text" rows="6" placeholder="Paste news articles, threat advisories, or security bulletins here...&#10;&#10;Supports both English and Arabic content."></textarea>
+                            <div class="form-text">
+                                Copy and paste news articles, security advisories, or threat reports directly.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <span class="spinner-border spinner-border-sm me-2 d-none" id="loadingSpinner"></span>
+                            <i class="fas fa-brain me-2" id="submitIcon"></i>
+                            Generate Recommendations
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Instructions -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6><i class="fas fa-info-circle me-2 text-info"></i>How it works:</h6>
+                    <ol class="mb-0">
+                        <li>Upload your training history Excel file</li>
+                        <li>Provide recent news through URLs or direct text</li>
+                        <li>The system analyzes similarities between your training subjects and current threats</li>
+                        <li>Get personalized course recommendations based on emerging trends</li>
+                    </ol>
+                </div>
+
+                <!-- Features -->
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="text-center p-3">
+                            <i class="fas fa-language fa-2x text-primary mb-2"></i>
+                            <h6>Multilingual</h6>
+                            <small class="text-muted">Supports Arabic & English</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3">
+                            <i class="fas fa-shield-alt fa-2x text-success mb-2"></i>
+                            <h6>Threat-Aware</h6>
+                            <small class="text-muted">Based on latest security news</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3">
+                            <i class="fas fa-robot fa-2x text-warning mb-2"></i>
+                            <h6>AI-Powered</h6>
+                            <small class="text-muted">Uses advanced NLP models</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Temporarily disabled JavaScript validation to test form submission
+console.log('Form loaded, JavaScript validation disabled for testing');
+</script>
+{% endblock %}
