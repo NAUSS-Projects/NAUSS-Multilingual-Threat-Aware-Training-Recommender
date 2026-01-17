@@ -9,7 +9,6 @@ import json
 # Seed for consistent results
 DetectorFactory.seed = 0
 
-
 def detect_language(text):
     """Detect if text is Arabic or English."""
     if not text:

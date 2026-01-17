@@ -1,0 +1,46 @@
+### Troubleshooting: Address Already in Use (Port 5000)
+
+If you encounter the error:
+
+```
+Address already in use
+Port 5000 is in use by another program.
+```
+
+This means another process is already using port `5000`. Follow these steps to resolve the issue:
+#### 0. **if using Macos**
+
+On macOS, try disabling the 'AirPlay Receiver' service from System Preferences -> General -> AirDrop & Handoff.
+
+#### 1. **Identify the Process Using Port 5000**
+Run the following command to find the process ID (PID) using the port:
+```bash
+lsof -i :5000
+```
+
+The output will show the PID of the process. For example:
+```
+COMMAND   PID       USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+python3  12345   macbookpro    3u  IPv4 0xa60ae437f1162efc      0t0  TCP *:5000 (LISTEN)
+```
+
+#### 2. **Stop the Process**
+Terminate the process using the PID:
+```bash
+kill -9 <PID>
+```
+Replace `<PID>` with the actual process ID (e.g., `12345`).
+
+#### 3. **Run the Application on a Different Port**
+If you cannot stop the process, run your Flask app on a different port:
+```bash
+python3 app.py --port=5001
+```
+
+#### 4. **Disable AirPlay Receiver (macOS Only)**
+On macOS, the `AirPlay Receiver` service may use port `5000`. To disable it:
+1. Open **System Preferences**.
+2. Go to **General** > **AirDrop & Handoff**.
+3. Turn off **AirPlay Receiver**.
+
+After disabling, retry running your application.

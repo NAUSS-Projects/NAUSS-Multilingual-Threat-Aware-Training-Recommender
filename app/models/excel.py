@@ -3,10 +3,8 @@ from langdetect import detect, DetectorFactory
 from langdetect.lang_detect_exception import LangDetectException
 import re
 
-
 # Seed for consistent results
 DetectorFactory.seed = 0
-
 
 def detect_language(text):
     """Detect if text is Arabic or English."""
@@ -41,7 +39,7 @@ def parse_training_excel(filepath):
     # Normalize column names to handle variations
     df.columns = df.columns.str.strip().str.lower()
     
-    # Map possible column variations
+    # Map possible column variations, hard conded rule maybe write it down later for the users.
     column_mapping = {
         'subject area': 'subject_area',
         'subject_area': 'subject_area',
