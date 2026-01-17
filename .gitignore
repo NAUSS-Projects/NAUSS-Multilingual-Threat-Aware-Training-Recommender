@@ -10,10 +10,11 @@ prompting
 __pycache__/
 *.py[codz]
 *$py.class
-# C extensions
+**/__pycache__
 .pycache
+# C extensions
 *.so
-
+git rm --cached -r path/to/__pycache__
 # Distribution / packaging
 .Python
 build/
