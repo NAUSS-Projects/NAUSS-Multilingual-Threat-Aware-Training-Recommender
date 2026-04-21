@@ -102,3 +102,18 @@ Run a simple python script or command to ensure everything is working:
 ```bash
 python -c "print('environment is working!')"
 ```
+
+## running the application
+
+1. **start ollama** (if not already running):
+   ```bash
+   ollama serve
+   ```
+
+2. **run the flask application**:
+   ```bash
+   python app.py
+   ```
+
+3. **access the application**:
+   open your browser to `http://localhost:5000`
