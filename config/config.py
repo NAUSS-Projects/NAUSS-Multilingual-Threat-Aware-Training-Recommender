@@ -40,7 +40,6 @@ class Config:
     CACHE_MODELS = os.environ.get('CACHE_MODELS', 'True').lower() == 'true'
     MODEL_CACHE_DIR = os.environ.get('MODEL_CACHE_DIR', './model_cache')
 
-
 class DevelopmentConfig(Config):
     """Development configuration."""
     DEBUG = True
@@ -48,7 +47,6 @@ class DevelopmentConfig(Config):
     
     # Development-specific settings
     EXPLAIN_TEMPLATE_LOADING = False
-
 
 class ProductionConfig(Config):
     """Production configuration."""
