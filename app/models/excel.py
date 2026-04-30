@@ -56,7 +56,8 @@ def parse_training_excel(filepath):
         'تاريخ البداية': 'start_date',
         'end date': 'end_date',
         'end_date': 'end_date',
-        'تاريخ النهاية': 'end_date'
+        'تاريخ النهاية': 'end_date',
+        'نهاية البرنامج': 'end_date'
     }
     
     # Rename columns
