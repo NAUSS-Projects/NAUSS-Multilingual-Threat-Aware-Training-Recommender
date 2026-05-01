@@ -21,6 +21,8 @@ class OllamaClient:
         self.model = model or os.environ.get('OLLAMA_MODEL', 'phi4')
         self.host = host or os.environ.get('OLLAMA_HOST', 'localhost:11434')
         self.client = ollama.Client(host=self.host)
+        print(f"[OllamaClient] Using Ollama model: {self.model}")
+        print(f"[OllamaClient] Using Ollama host: {self.host}")
         self._verify_model()
     
     def _choose_fallback_model(self, available_models: List[str]) -> Optional[str]:
