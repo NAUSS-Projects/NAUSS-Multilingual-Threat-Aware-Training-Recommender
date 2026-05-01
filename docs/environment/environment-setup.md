@@ -103,6 +103,15 @@ Run a simple python script or command to ensure everything is working:
 python -c "print('environment is working!')"
 ```
 
+## 6. install the models locally
+
+1. install phi4 or qwen2.5(lighter)
+
+```bash
+ollama pull phi4
+ollama pull qwen2.5:1.5b
+```
+
 ## running the application
 
 1. **start ollama** (if not already running):
